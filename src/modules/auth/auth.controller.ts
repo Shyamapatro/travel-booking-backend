@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -11,7 +11,12 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() body: RegisterDto) {
-    return this.authService.register(body.email, body.password);
+    const user = await this.authService.register(body);
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'User registered successfully',
+      data: user,
+    };
   }
 
   @Post('login')

@@ -1,17 +1,32 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, BadRequestException } from '@nestjs/common';
+
 import { AppModule } from './app.module';
 
+import { Logger } from 'nestjs-pino';
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  // app.useLogger(app.get(Logger));
   app.enableCors(); // Enable CORS for all origins
 
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       transform: true,
+      exceptionFactory: (errors) => {
+        const result = errors.map((error) => ({
+          property: error.property,
+          message: error.constraints
+            ? error.constraints[Object.keys(error.constraints)[0]]
+            : 'Invalid value',
+        }));
+        return new BadRequestException(result[0].message);
+      },
+      stopAtFirstError: true,
     }),
+
   );
 
   // ===== Swagger Setup =====

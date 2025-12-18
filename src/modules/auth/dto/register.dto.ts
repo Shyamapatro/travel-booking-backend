@@ -10,4 +10,14 @@ export class RegisterDto {
   @IsString()
   @MinLength(6)
   password: string;
+
+  @ApiProperty({ example: '9876543210' })
+  @IsString()
+  @MinLength(10)
+  phoneNumber: string;
+
+  @ApiProperty({ example: '+91', required: false })
+  @IsString()
+  @MinLength(2)
+  countryCode?: string;
 }
