@@ -1,15 +1,25 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe, BadRequestException } from '@nestjs/common';
 
 import { AppModule } from './app.module';
 
 import { Logger } from 'nestjs-pino';
+import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { APP_MESSAGES } from './common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
-  // app.useLogger(app.get(Logger));
+  app.useLogger(app.get(Logger));
+  app.setGlobalPrefix('api');
   app.enableCors(); // Enable CORS for all origins
+
+  // Global Exception Filter
+  app.useGlobalFilters(new AllExceptionsFilter());
+
+  // Global Response Interceptor
+  app.useGlobalInterceptors(new TransformInterceptor(app.get(Reflector)));
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -20,7 +30,7 @@ async function bootstrap() {
           property: error.property,
           message: error.constraints
             ? error.constraints[Object.keys(error.constraints)[0]]
-            : 'Invalid value',
+            : APP_MESSAGES.GENERAL.BAD_REQUEST,
         }));
         return new BadRequestException(result[0].message);
       },
