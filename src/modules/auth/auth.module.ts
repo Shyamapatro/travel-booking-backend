@@ -6,10 +6,13 @@ import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 
+import { RedisModule } from '../redis/redis.module';
+
 @Module({
      imports: [
     UsersModule,
     PassportModule,
+    RedisModule,
     JwtModule.register({}),
   ],
 
