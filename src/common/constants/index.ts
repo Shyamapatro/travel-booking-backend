@@ -56,6 +56,6 @@ export const CACHE_TTL = {
 };
 
 export const DEFAULT_REDIS_CONFIG = {
-    HOST: 'localhost',
-    PORT: 6379,
+    HOST: (process.env.REDIS_HOST as string) || 'localhost',
+    PORT: parseInt(process.env.REDIS_PORT as string, 10) || 6379,
 };

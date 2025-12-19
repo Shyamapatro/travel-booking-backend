@@ -13,7 +13,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   onModuleInit() {
     this.client = new Redis({
       host: this.configService.get<string>('REDIS_HOST', DEFAULT_REDIS_CONFIG.HOST),
-      port: this.configService.get<number>('REDIS_PORT', DEFAULT_REDIS_CONFIG.PORT),
+      port: this.configService.get<number>('REDIS_PORT', DEFAULT_REDIS_CONFIG.PORT as number),
       password: this.configService.get<string>('REDIS_PASSWORD') || undefined,
     });
 
