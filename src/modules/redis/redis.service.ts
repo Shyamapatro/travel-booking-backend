@@ -11,6 +11,12 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   constructor(private configService: ConfigService) { }
 
   onModuleInit() {
+    console.log('[Redis Config]..........', {
+      host: this.configService.get<string>('REDIS_HOST', DEFAULT_REDIS_CONFIG.HOST),
+      port: this.configService.get<number>('REDIS_PORT', DEFAULT_REDIS_CONFIG.PORT as number),
+      authEnabled: Boolean(this.configService.get<string>('REDIS_PASSWORD')),
+      environment: process.env.NODE_ENV,
+    });
     this.client = new Redis({
       host: this.configService.get<string>('REDIS_HOST', DEFAULT_REDIS_CONFIG.HOST),
       port: this.configService.get<number>('REDIS_PORT', DEFAULT_REDIS_CONFIG.PORT as number),
